@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOL观点分布图表</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        #chart-container {
+            width: 100%;
+            height: 600px;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #myChart {
+            width: 100%;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            #chart-container {
+                height: 500px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="chart-container">
+        <div id="myChart"></div>
+    </div>
+
+    <script>
+        // 初始化ECharts实例
+        const chartDom = document.getElementById('myChart');
+        const myChart = echarts.init(chartDom);
+        
+        // ECharts配置选项
+        const option = {
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: 'rgba(255, 182, 193, 0.95)',
+                borderColor: '#FF69B4',
+                borderWidth: 2,
+                borderRadius: 10,
+                padding: [12, 16],
+                textStyle: {
+                    color: '#8B0000',
+                    fontSize: 14,
+                    fontWeight: 'bold'
+                },
+                formatter: function(params) {
+                    var value = params.value;
+                    var percent = params.percent.toFixed(1);
+                    var name = params.name;
+                    var seriesName = params.seriesName;
+                    var color = params.color;
+                    
+                    return `
+                        <div style="font-family: 'Microsoft YaHei', sans-serif;">
+                            <div style="margin-bottom: 6px; border-bottom: 1px dashed #FF69B4; padding-bottom: 4px;">
+                                <span style="font-size: 15px; color: #8B0000; font-weight: bold;">${seriesName}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                                <div style="width: 12px; height: 12px; background-color: ${color}; border-radius: 50%; margin-right: 8px;"></div>
+                                <span style="color: #C71585; font-weight: bold;">${name}</span>
+                            </div>
+                            <div style="margin-top: 6px;">
+                                <div style="color: #FF1493;">数值: <span style="color: #8B0000; font-size: 16px;">${value}</span></div>
+                                <div style="color: #FF1493;">占比: <span style="color: #8B0000; font-size: 16px;">${percent}%</span></div>
+                            </div>
+                            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #FF69B4; font-size: 12px; color: #DB7093;">
+                                ✨ 点击查看详情
+                            </div>
+                        </div>
+                    `;
+                },
+                extraCssText: `
+                    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.3);
+                    backdrop-filter: blur(8px);
+                `
+            },
+            legend: {
+                top: '15%',
+                left: 'center',
+                textStyle: {
+                    color: '#d63384',
+                    fontSize: 14,
+                    fontFamily: "'Microsoft YaHei', sans-serif"
+                },
+                icon: 'circle',
+                itemWidth: 10,
+                itemHeight: 10,
+                itemGap: 20,
+                data: ['中立', '支持不婚', '反对不婚']
+            },
+            color: [
+                '#f091a0',
+                '#FFB6C1',
+                '#b1d5c9',
+                '#FFC0CB',
+                '#FF1493',
+                '#DB7093'
+            ],
+            title: {
+                text: 'KOL观点分布 - 不婚话题立场统计',
+                subtext: '基于三派KOL的观点数据可视化',
+                left: 'center',
+                top: '20',
+                textStyle: {
+                    color: '#d63384',
+                    fontSize: 22,
+                    fontWeight: 'bold',
+                    fontFamily: "'Microsoft YaHei', sans-serif",
+                    textShadow: '0 2px 4px rgba(219, 112, 147, 0.3)'
+                },
+                subtextStyle: {
+                    color: '#FF69B4',
+                    fontSize: 14,
+                    fontFamily: "'Microsoft YaHei', sans-serif",
+                    fontStyle: 'italic'
+                }
+            },
+            series: [
+                {
+                    name: '现实担忧派-KOL',
+                    type: 'pie',
+                    radius: ['0%', '25%'],
+                    center: ['50%', '55%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 8,
+                        borderColor: '#FFF',
+                        borderWidth: 2
+                    },
+                    emphasis: {
+                        scale: true,
+                        scaleSize: 8,
+                        itemStyle: {
+                            shadowBlur: 15,
+                            shadowColor: 'rgba(255, 105, 180, 0.8)',
+                            borderWidth: 3,
+                            borderColor: '#FF1493'
+                        },
+                        label: {
+                            show: true,
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                            color: '#d63384',
+                            fontFamily: "'Microsoft YaHei', sans-serif"
+                        }
+                    },
+                    label: {
+                        show: false,
+                        position: 'center',
+                        color: '#d63384',
+                        fontFamily: "'Microsoft YaHei', sans-serif"
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        { value: 60, name: '中立' },
+                        { value: 53, name: '支持不婚' },
+                        { value: 9, name: '反对不婚' }
+                    ]
+                },
+                {
+                    name: '谨慎中立派-KOL',
+                    type: 'pie',
+                    radius: ['30%', '45%'],
+                    center: ['50%', '55%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 8,
+                        borderColor: '#FFF',
+                        borderWidth: 2
+                    },
+                    emphasis: {
+                        scale: true,
+                        scaleSize: 8,
+                        itemStyle: {
+                            shadowBlur: 15,
+                            shadowColor: 'rgba(255, 105, 180, 0.8)',
+                            borderWidth: 3,
+                            borderColor: '#FF1493'
+                        },
+                        label: {
+                            show: true,
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                            color: '#d63384',
+                            fontFamily: "'Microsoft YaHei', sans-serif"
+                        }
+                    },
+                    label: {
+                        show: false,
+                        position: 'center',
+                        color: '#d63384',
+                        fontFamily: "'Microsoft YaHei', sans-serif"
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        { value: 156, name: '中立' },
+                        { value: 55, name: '支持不婚' },
+                        { value: 11, name: '反对不婚' }
+                    ]
+                },
+                {
+                    name: '理性支持派-KOL',
+                    type: 'pie',
+                    radius: ['50%', '65%'],
+                    center: ['50%', '55%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 8,
+                        borderColor: '#FFF',
+                        borderWidth: 2
+                    },
+                    emphasis: {
+                        scale: true,
+                        scaleSize: 8,
+                        itemStyle: {
+                            shadowBlur: 15,
+                            shadowColor: 'rgba(255, 105, 180, 0.8)',
+                            borderWidth: 3,
+                            borderColor: '#FF1493'
+                        },
+                        label: {
+                            show: true,
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                            color: '#d63384',
+                            fontFamily: "'Microsoft YaHei', sans-serif"
+                        }
+                    },
+                    label: {
+                        show: false,
+                        position: 'center',
+                        color: '#d63384',
+                        fontFamily: "'Microsoft YaHei', sans-serif"
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        { value: 138, name: '中立' },
+                        { value: 72, name: '支持不婚' },
+                        { value: 13, name: '反对不婚' }
+                    ]
+                }
+            ],
+            graphic: [
+                {
+                    type: 'text',
+                    left: 'center',
+                    top: '45%',
+                    style: {
+                        text: '现实担忧派',
+                        fill: 'linear-gradient(45deg, #FF1493, #FF69B4)',
+                        fontSize: 13,
+                        fontWeight: 'bold',
+                        fontFamily: "'Microsoft YaHei', sans-serif",
+                        textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                    }
+                },
+                {
+                    type: 'text',
+                    left: 'center',
+                    top: '53%',
+                    style: {
+                        text: '谨慎中立派',
+                        fill: 'linear-gradient(45deg, #FF1493, #FF69B4)',
+                        fontSize: 13,
+                        fontWeight: 'bold',
+                        fontFamily: "'Microsoft YaHei', sans-serif",
+                        textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                    }
+                },
+                {
+                    type: 'text',
+                    left: 'center',
+                    top: '61%',
+                    style: {
+                        text: '理性支持派',
+                        fill: 'linear-gradient(45deg, #FF1493, #FF69B4)',
+                        fontSize: 13,
+                        fontWeight: 'bold',
+                        fontFamily: "'Microsoft YaHei', sans-serif",
+                        textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                    }
+                }
+            ],
+            backgroundColor: {
+                type: 'radial',
+                x: 0.5,
+                y: 0.5,
+                r: 0.8,
+                colorStops: [
+                    {
+                        offset: 0,
+                        color: 'rgba(255, 250, 250, 0.95)'
+                    },
+                    {
+                        offset: 1,
+                        color: 'rgba(255, 240, 245, 0.9)'
+                    }
+                ]
+            }
+        };
+
+        // 应用配置
+        myChart.setOption(option);
+
+        // 响应窗口大小变化
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+        
+        // 初始化时确保图表正确渲染
+        setTimeout(() => {
+            myChart.resize();
+        }, 100);
+    </script>
+</body>
+</html>
